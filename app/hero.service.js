@@ -10,18 +10,47 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var core_1 = require('@angular/core');
 var mock_heroes_1 = require('./mock-heroes');
+var http_1 = require('@angular/http');
+var Observable_1 = require('rxjs/Observable');
+require('rxjs/add/operator/catch');
+require('rxjs/add/operator/map');
+require('rxjs/add/observable/throw');
+require('rxjs/add/operator/do');
+var http_2 = require('@angular/http');
 var HeroService = (function () {
-    function HeroService() {
+    function HeroService(http) {
+        this.http = http;
+        this.heroesUrl = 'app/heroes.json'; // URL to web API
     }
     HeroService.prototype.getHeroes = function () {
         return Promise.resolve(mock_heroes_1.HEROES);
+    };
+    HeroService.prototype.getHeroesObservable = function () {
+        return this.http.get(this.heroesUrl).map(this.extractData).do(function (data) { return console.log(data); }).catch(this.handleError);
+    };
+    HeroService.prototype.extractData = function (res) {
+        var body = res.json();
+        return body.data || {};
+    };
+    HeroService.prototype.handleError = function (error) {
+        //In a real world app, we might use a remoate logging infrastructure
+        //We would also dig deeper into the error to get a better message
+        var errMsg = (error.message) ? error.message : error.status ? error.status + " - " + error.statusText : 'Server error';
+        console.error(errMsg);
+        return Observable_1.Observable.throw(errMsg);
+    };
+    HeroService.prototype.addHero = function (name) {
+        var body = JSON.stringify({ name: name });
+        var headers = new http_2.Headers({ 'Content-Type': 'application/json' });
+        var options = new http_2.RequestOptions({ headers: headers });
+        return this.http.post(this.heroesUrl, body, options).map(this.extractData).do(function (data) { return console.log(data); }).catch(this.handleError);
     };
     HeroService.prototype.getHeroesSlowly = function () {
         return new Promise(function (resolve) { return setTimeout(function () { return resolve(mock_heroes_1.HEROES); }, 5000); });
     };
     HeroService = __decorate([
         core_1.Injectable(), 
-        __metadata('design:paramtypes', [])
+        __metadata('design:paramtypes', [http_1.Http])
     ], HeroService);
     return HeroService;
 }());

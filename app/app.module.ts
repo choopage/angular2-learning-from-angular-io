@@ -10,12 +10,15 @@ import { HeroDetailComponent } from './hero-detail.component';
 
 import {HeroService} from "./hero.service";
 
+import { HeroListComponent } from './hero-list.component';
+
 import { routing }        from './app.routing';
 
+import { HttpModule, JsonpModule } from '@angular/http';
 
 @NgModule({
-    imports: [BrowserModule, FormsModule, routing],
-    declarations: [ AppComponent, HeroesComponent, HeroDetailComponent ],
+    imports: [BrowserModule, FormsModule, routing, HttpModule, JsonpModule],
+    declarations: [ AppComponent, HeroesComponent, HeroDetailComponent, HeroListComponent ],
     providers: [ HeroService ],
     bootstrap: [ AppComponent ]
 })
